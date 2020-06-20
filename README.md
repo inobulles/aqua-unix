@@ -15,6 +15,9 @@ Compile all the devices.
 ### --kos
 Compile the KOS.
 
+### --compiler
+Compile the compiler.
+
 ### --install
 Install the compiled binaries on the system, download the default AQUA root directory, and create config files if not already created.
 Will automatically compile the KOS and devices if they are not already.

@@ -5,10 +5,9 @@ set -e
 
 cc=gcc
 root_dir=~/aqua-root
-config_dir=~/.config/aqua
-devices_dir=$config_dir/devices
+data_dir=/usr/share/aqua
 bin_dir=/usr/local/bin/aqua
-cc_flags="-DKOS_DEFAULT_DEVICES_PATH=\"$devices_dir\" -DKOS_DEFAULT_ROOT_PATH=\"$root_dir\" -DKOS_DEFAULT_BOOT_PATH=\"$root_dir/boot.zpk\" -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL"
+cc_flags="-DKOS_DEFAULT_DEVICES_PATH=\"$data_dir/devices\" -DKOS_DEFAULT_ROOT_PATH=\"$root_dir\" -DKOS_DEFAULT_BOOT_PATH=\"$root_dir/boot.zpk\" -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL"
 
 # parse arguments
 
@@ -135,18 +134,18 @@ if [ $install = true ]; then
 
     echo "[AQUA Unix builder] Creating config files ..."
     
-    mkdir -p $config_dir
-    cp -r compiled/devices $config_dir
+    sudo mkdir -p $data_dir
+    sudo cp -r compiled/devices $data_dir
 fi
 
 # uninstall
 
 if [ $uninstall = true ]; then
     echo "[AQUA Unix builder] Uninstalling binaries ..."
-    sudo rm -rf $bin_dir
-    
-    rm -rf $config_dir
     rm -rf compiled
+    
+    sudo rm -rf $bin_dir
+    sudo rm -rf $data_dir
 fi
 
 echo "[AQUA Unix builder] Done"
