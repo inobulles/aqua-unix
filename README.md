@@ -1,6 +1,8 @@
 # aqua-unix
 A script for automatically building and installing AQUA on Unix-based systems.
-This help document only applies to the `build.sh` script. If you need help using the `aqua` command, run `aqua --help`
+This help document only applies to the `build.sh` script.
+If you need help using the `aqua` command, run `aqua --help`.
+If you need help using the compiler, read `src/compiler/README.md`.
 
 ## Command-line arguments
 Here is a list of all command-line arguments that can be passed to `build.sh` and how to use them.
