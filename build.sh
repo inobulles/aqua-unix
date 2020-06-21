@@ -179,13 +179,13 @@ if [ $install = true ]; then
     sudo mkdir -p $data_dir
     sudo cp -r bin/devices $data_dir
 
-    if [ -d "bin/compiler" ]; then
+    if [ -d bin/compiler ]; then
         echo "[AQUA Unix Builder] Installing compiler ..."
         
         sudo cp -r bin/compiler $data_dir
-        sudo rm -f $bin_dir-compiler
-        sudo echo -e "#!/bin/sh\nset -e\nsh $data_dir/compiler/compile.sh \$*\nexit 0" | sudo tee $bin_dir-compiler > /dev/null
-        sudo chmod +x $bin_dir-compiler
+        sudo rm -f $bin_dir-compile
+        sudo echo -e "#!/bin/sh\nset -e\nsh $data_dir/compiler/compile.sh \$*\nexit 0" | sudo tee $bin_dir-compile > /dev/null
+        sudo chmod +x $bin_dir-compile
     fi
 fi
 
@@ -196,7 +196,7 @@ if [ $uninstall = true ]; then
     rm -rf bin
     
     sudo rm -rf $bin_dir
-    sudo rm -rf $bin_dir-compiler
+    sudo rm -rf $bin_dir-compile
     sudo rm -rf $data_dir
 fi
 
