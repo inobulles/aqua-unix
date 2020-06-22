@@ -31,11 +31,8 @@ while test $# -gt 0; do
     elif [ $1 = --install   ]; then install=true
     elif [ $1 = --uninstall ]; then uninstall=true
     elif [ $1 = --git-ssh   ]; then git_prefix=ssh://git@github.com
-
-    elif [ $1 = --platform  ]; then
-        platform=$2; shift
-        compile_kos=true
-        compile_devices=true
+    elif [ $1 = --platform  ]; then platform=$2; shift
+    
     else
         echo "[AQUA Unix Builder] ERROR Unknown argument '$1' (read README.md for help)"
         exit 1
@@ -61,8 +58,8 @@ if [ $install = true ]; then
     if [ ! -d "bin/devices" ]; then compile_devices=true; fi
 fi
 
-if   [ $platform = broadcom ]; then cc_flags="$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL"
-elif [ $platform = desktop  ]; then cc_flags="$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_BROADCOM -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -L/opt/vc/lib/ -lbrcmGLESv2 -lbrcmEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -L/opt/vc/src/hello_pi/libs/ilclient -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I./ -I/src/libs/ilclient"
+if   [ $platform = desktop  ]; then cc_flags="$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL"
+elif [ $platform = broadcom ]; then cc_flags="$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_BROADCOM -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -L/opt/vc/lib/ -lbrcmGLESv2 -lbrcmEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -L/opt/vc/src/hello_pi/libs/ilclient -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I./ -I/src/libs/ilclient"
 
 else
     echo "[AQUA Unix Builder] ERROR Unknown platform '$platform'"
