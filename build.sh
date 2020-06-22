@@ -7,7 +7,7 @@ cc=gcc
 root_dir=~/aqua-root
 data_dir=/usr/share/aqua
 bin_dir=/usr/local/bin/aqua
-cc_flags="-DKOS_DEFAULT_DEVICES_PATH=\"$data_dir/devices\" -DKOS_DEFAULT_ROOT_PATH=\"$root_dir\" -DKOS_DEFAULT_BOOT_PATH=\"$root_dir/boot.zpk\" -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL"
+cc_flags="-DKOS_DEFAULT_DEVICES_PATH=\"$data_dir/devices\" -DKOS_DEFAULT_ROOT_PATH=\"$root_dir\" -DKOS_DEFAULT_BOOT_PATH=\"$root_dir/boot.zpk\""
 
 # parse arguments
 
@@ -17,6 +17,7 @@ echo "[AQUA Unix Builder] Parsing arguments ..."
 update=false
 compile_devices=false
 compile_kos=false
+platform=desktop
 compile_compiler=false
 install=false
 uninstall=false
@@ -31,6 +32,10 @@ while test $# -gt 0; do
     elif [ $1 = --uninstall ]; then uninstall=true
     elif [ $1 = --git-ssh   ]; then git_prefix=ssh://git@github.com
 
+    elif [ $1 = --platform  ]; then
+        platform=$2; shift
+        compile_kos=true
+        compile_devices=true
     else
         echo "[AQUA Unix Builder] ERROR Unknown argument '$1' (read README.md for help)"
         exit 1
@@ -54,6 +59,14 @@ if [ $install = true ]; then
 
     if [ ! -f "bin/kos" ]; then compile_kos=true; fi
     if [ ! -d "bin/devices" ]; then compile_devices=true; fi
+fi
+
+if   [ $platform = broadcom ]; then cc_flags=$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL
+elif [ $platform = desktop  ]; then cc_flags=$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_BROADCOM -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -L/opt/vc/lib/ -lbrcmGLESv2 -lbrcmEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -lilclient -L/opt/vc/src/hello_pi/libs/ilclient -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I./ -I/src/libs/ilclient
+
+else
+    echo "[AQUA Unix Builder] ERROR Unknown platform '$platform'"
+    exit 1
 fi
 
 # download missing components

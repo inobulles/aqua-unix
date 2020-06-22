@@ -17,6 +17,10 @@ Compile all the devices.
 ### --kos
 Compile the KOS.
 
+### --platform [platform name]
+Specify which platform you want to compile for when compiling the KOS or devices.
+Will automatically compile the KOS and devices.
+
 ### --compiler
 Compile the compiler.
 
