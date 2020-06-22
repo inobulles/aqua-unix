@@ -61,8 +61,8 @@ if [ $install = true ]; then
     if [ ! -d "bin/devices" ]; then compile_devices=true; fi
 fi
 
-if   [ $platform = broadcom ]; then cc_flags=$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL
-elif [ $platform = desktop  ]; then cc_flags=$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_BROADCOM -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -L/opt/vc/lib/ -lbrcmGLESv2 -lbrcmEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -lilclient -L/opt/vc/src/hello_pi/libs/ilclient -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I./ -I/src/libs/ilclient
+if   [ $platform = broadcom ]; then cc_flags="$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_DESKTOP -lSDL2 -lGL"
+elif [ $platform = desktop  ]; then cc_flags="$cc_flags -DKOS_PLATFORM=KOS_PLATFORM_BROADCOM -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -L/opt/vc/lib/ -lbrcmGLESv2 -lbrcmEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -lilclient -L/opt/vc/src/hello_pi/libs/ilclient -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I./ -I/src/libs/ilclient"
 
 else
     echo "[AQUA Unix Builder] ERROR Unknown platform '$platform'"
