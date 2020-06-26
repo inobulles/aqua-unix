@@ -7,7 +7,7 @@ cc=gcc
 root_dir=~/aqua-root
 data_dir=/usr/share/aqua
 bin_dir=/usr/local/bin/aqua
-cc_flags="-DKOS_DEFAULT_DEVICES_PATH=\"$data_dir/devices\" -DKOS_DEFAULT_ROOT_PATH=\"$root_dir\" -DKOS_DEFAULT_BOOT_PATH=\"$root_dir/boot.zpk\" `icu-config --ldflags --ldflags-icuio`"
+cc_flags="-DKOS_DEFAULT_DEVICES_PATH=\"$data_dir/devices\" -DKOS_DEFAULT_ROOT_PATH=\"$root_dir\" -DKOS_DEFAULT_BOOT_PATH=\"$root_dir/boot.zpk\" -licuuc"
 
 # parse arguments
 
