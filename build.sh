@@ -18,6 +18,8 @@ cc_flags="
 	-I$inc_path
 	-L$lib_path
 	$lib_path/libiar.a
+	-Wno-unused-command-line-argument
+	-I`realpath src/compiler/`
 	-DKOS_DEFAULT_DEVICES_PATH=\"$data_path/devices/\"
 	-DKOS_DEFAULT_ROOT_PATH=\"$root_path\"
 	-DKOS_DEFAULT_BOOT_PATH=\"$root_path/boot.zpk\""
