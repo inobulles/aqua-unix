@@ -19,10 +19,14 @@ cc_flags="
 	-L$lib_path
 	$lib_path/libiar.a
 	-Wno-unused-command-line-argument
-	-I`realpath src/compiler/`
+	-I`realpath src/kos/zvm/`
 	-DKOS_DEFAULT_DEVICES_PATH=\"$data_path/devices/\"
 	-DKOS_DEFAULT_ROOT_PATH=\"$root_path\"
 	-DKOS_DEFAULT_BOOT_PATH=\"$root_path/boot.zpk\""
+
+if [ -d src/compiler/ ]; then
+	cc_flags="$cc_flags -I`realpath src/compiler/`"
+fi
 
 # parse arguments
 
