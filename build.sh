@@ -14,6 +14,7 @@ lib_path=/usr/local/lib/
 # note that we need to link libiar statically (because of an apparent bug with the readdir function with clang on FreeBSD)
 
 cc_flags="
+	-g
 	-std=c99
 	-I$inc_path
 	-L$lib_path
@@ -164,7 +165,7 @@ if [ $compile_compiler = true ]; then
 		-DCOMPILER_DIR_PATH=\"$data_path/compiler/\" $cc_flags &
 
 	( cd src/compiler/langs/
-	for path in `find . -maxdepth 1 -type d -not -name *git* | tail -n +2 | cut -c3-`; do
+	for path in `find . -maxdepth 1 -type d -not -name ".*" | cut -c3-`; do
 		( echo "[AQUA Unix Builder] Compiling $path language ..."
 		cd $path
 		sh build.sh $cc_flags
@@ -173,7 +174,7 @@ if [ $compile_compiler = true ]; then
 	wait ) &
 
 	( cd src/compiler/targs/
-	for path in `find . -maxdepth 1 -type d -not -name *git* | tail -n +2 | cut -c3-`; do
+	for path in `find . -maxdepth 1 -type d -not -name ".*" | cut -c3-`; do
 		( echo "[AQUA Unix Builder] Compiling $path target ..."
 		cd $path
 		sh build.sh $cc_flags
@@ -191,7 +192,7 @@ if [ $compile_devices = true ]; then
 	mkdir -p bin/devices/
 
 	( cd src/devices
-	for path in `find . -maxdepth 1 -type d -not -name *git* | tail -n +2 | cut -c3-`; do
+	for path in `find . -maxdepth 1 -type d -not -name ".*" | cut -c3-`; do
 		( echo "[AQUA Unix Builder] Compiling $path device ..."
 		cd $path
 		sh build.sh $cc_flags
