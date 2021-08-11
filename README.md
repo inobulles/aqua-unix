@@ -13,6 +13,12 @@ They can be chained together to perform multiple actions at once.
 
 Update all local repositories to their latest versions.
 
+### --devbranch
+
+Select the branch (the argument directly following this one) in the [`aqua-devices`](https://github.com/inobulles/aqua-devices) repository to use for the devices.
+This won't do anything if either the `src/devices/` directory already exists, either the `--update` argument is not also passed.
+By default, `--devbranch` is set to `core`.
+
 ### --devices
 
 Compile all the devices.

@@ -39,6 +39,7 @@ echo "[AQUA Unix Builder] AQUA Unix Builder"
 echo "[AQUA Unix Builder] Parsing arguments ..."
 
 update=false
+devbranch=core
 compile_devices=false
 compile_kos=false
 compile_compiler=false
@@ -49,6 +50,7 @@ git_prefix=https://github.com
 
 while test $# -gt 0; do
 	if   [ $1 = --update    ]; then update=true
+	elif [ $1 = --devbranch ]; then devbranch=$2 && shift
 	elif [ $1 = --devices   ]; then compile_devices=true
 	elif [ $1 = --kos       ]; then compile_kos=true
 	elif [ $1 = --compiler  ]; then compile_compiler=true
@@ -96,7 +98,7 @@ if [ ! -d src/zvm/ ]; then
 fi
 
 if [ ! -d src/devices/ ]; then
-	git clone $git_prefix/inobulles/aqua-devices src/devices/ --depth 1 -b main &
+	git clone $git_prefix/inobulles/aqua-devices src/devices/ -b $devbranch &
 fi
 
 if [ $compile_compiler = true ] && [ ! -d src/compiler/ ]; then
@@ -129,17 +131,19 @@ if [ $update = true ]; then
 	echo "[AQUA Unix Builder] Updating components ..."
 
 	( cd src/kos/
-	git pull origin main ) &
+	git pull ) &
 
 	( cd src/zvm/
-	git pull origin main ) &
+	git pull ) &
 
 	( cd src/devices/
-	git pull origin main ) &
+	git fetch
+	git checkout $devbranch
+	git pull ) &
 
 	( if [ -d src/compiler ]; then
 		cd src/compiler/
-		git pull origin main
+		git pull
 	fi ) &
 
 	wait
@@ -162,6 +166,7 @@ if [ $compile_compiler = true ]; then
 		echo "[AQUA Unix Builder] Compiling $path language ..."
 		
 		( cd $path
+
 		sh build.sh $cc_flags
 		mv bin ../../../../bin/compiler/langs/$path ) & # there has to be a better way than doing ../../../../ lmao
 	done
@@ -172,6 +177,7 @@ if [ $compile_compiler = true ]; then
 		echo "[AQUA Unix Builder] Compiling $path target ..."
 		
 		( cd $path
+
 		sh build.sh $cc_flags
 		mv bin ../../../../bin/compiler/targs/$path ) &
 	done
@@ -195,8 +201,10 @@ if [ $compile_devices = true ]; then
 
 	( cd src/devices
 	for path in $(find . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
-		( echo "[AQUA Unix Builder] Compiling $path device ..."
-		cd $path
+		echo "[AQUA Unix Builder] Compiling $path device ..."
+		
+		( cd $path
+
 		sh build.sh $cc_flags
 		mv device ../../../bin/devices/$path.device
 		
