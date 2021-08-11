@@ -5,28 +5,32 @@ set -e
 
 # flags
 
-root_path=~/.aqua-root/
-data_path=/usr/share/aqua/
-bin_path=/usr/local/bin/aqua
-inc_path=/usr/local/include/
-lib_path=/usr/local/lib/
+export AQUA_ROOT_PATH=~/.aqua-root/
+export AQUA_DATA_PATH=/usr/share/aqua/
+export AQUA_BIN_PATH=/usr/local/bin/aqua
+export AQUA_INC_PATH=/usr/local/include/
+export AQUA_LIB_PATH=/usr/local/lib/
 
 # note that we need to link libiar statically (because of an apparent bug with the readdir function with clang on FreeBSD)
 
 cc_flags="
 	-g
 	-std=c99
-	-I$inc_path
-	-L$lib_path
-	$lib_path/libiar.a
+	-I$AQUA_INC_PATH
+	-L$AQUA_LIB_PATH
+	$AQUA_LIB_PATH/libiar.a
 	-Wno-unused-command-line-argument
-	-I`realpath src/kos/zvm/`
-	-DKOS_DEFAULT_DEVICES_PATH=\"$data_path/devices/\"
-	-DKOS_DEFAULT_ROOT_PATH=\"$root_path\"
-	-DKOS_DEFAULT_BOOT_PATH=\"$root_path/boot.zpk\""
+	-I$(realpath src/zvm/)
+	-DKOS_DEFAULT_DEVICES_PATH=\"$AQUA_DATA_PATH/devices/\"
+	-DKOS_DEFAULT_ROOT_PATH=\"$AQUA_ROOT_PATH\"
+	-DKOS_DEFAULT_BOOT_PATH=\"$AQUA_ROOT_PATH/boot.zpk\""
 
 if [ -d src/compiler/ ]; then
-	cc_flags="$cc_flags -I`realpath src/compiler/`"
+	cc_flags="$cc_flags -I$(realpath src/compiler/)"
+fi
+
+if [ -d src/devices/ ]; then
+	cc_flags="$cc_flags -I$(realpath src/devices/)"
 fi
 
 # parse arguments
@@ -37,8 +41,8 @@ echo "[AQUA Unix Builder] Parsing arguments ..."
 update=false
 compile_devices=false
 compile_kos=false
-platform=desktop
 compile_compiler=false
+compile_manager=false
 install=false
 uninstall=false
 git_prefix=https://github.com
@@ -48,10 +52,10 @@ while test $# -gt 0; do
 	elif [ $1 = --devices   ]; then compile_devices=true
 	elif [ $1 = --kos       ]; then compile_kos=true
 	elif [ $1 = --compiler  ]; then compile_compiler=true
+	elif [ $1 = --manager   ]; then compile_manager=true
 	elif [ $1 = --install   ]; then install=true
 	elif [ $1 = --uninstall ]; then uninstall=true
 	elif [ $1 = --git-ssh   ]; then git_prefix=ssh://git@github.com
-	elif [ $1 = --platform  ]; then platform=$2; shift
 	
 	else
 		echo "[AQUA Unix Builder] ERROR Unknown argument '$1' (read README.md for help)"
@@ -64,6 +68,7 @@ done
 # setup
 
 echo "[AQUA Unix Builder] Setting up ..."
+
 mkdir -p src/
 mkdir -p bin/
 
@@ -78,56 +83,44 @@ if [ $install = true ]; then
 	if [ ! -d bin/devices/ ]; then compile_devices=true; fi
 fi
 
-if   [ $platform = desktop  ]; then
-	cc_flags="$cc_flags
-		-DKOS_PLATFORM=KOS_PLATFORM_DESKTOP
-		-lSDL2
-		-lGL"
-
-elif [ $platform = broadcom ]; then
-	cc_flags="$cc_flags
-		-DKOS_PLATFORM=KOS_PLATFORM_BROADCOM
-		-L/opt/vc/lib/ -lbrcmGLESv2 -lbrcmEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -L/opt/vc/src/hello_pi/libs/ilclient -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I./ -I/src/libs/ilclient"
-
-else
-	echo "[AQUA Unix Builder] ERROR Unknown platform '$platform'"
-	exit 1
-fi
-
 # download missing components
 
 echo "[AQUA Unix Builder] Downloading potentially missing components ..."
 
-( if [ ! -d src/kos ]; then
-	git clone $git_prefix/inobulles/aqua-kos --depth 1 -b master
-	mv aqua-kos/ src/kos/
+if [ ! -d src/kos/ ]; then
+	git clone $git_prefix/inobulles/aqua-kos src/kos/ --depth 1 -b main &
 fi
 
-if [ ! -d src/kos/zvm ]; then
-	git clone $git_prefix/inobulles/aqua-zvm --depth 1 -b master
-	mv aqua-zvm/ src/kos/zvm/
-fi ) &
+if [ ! -d src/zvm/ ]; then
+	git clone $git_prefix/inobulles/aqua-zvm src/zvm/ --depth 1 -b main &
+fi
 
-( if [ ! -d src/devices ]; then
-	git clone $git_prefix/inobulles/aqua-devices --depth 1 -b master
-	mv aqua-devices/ src/devices/
-fi ) &
+if [ ! -d src/devices/ ]; then
+	git clone $git_prefix/inobulles/aqua-devices src/devices/ --depth 1 -b main &
+fi
 
-( if [ $compile_compiler = true ] && [ ! -d src/compiler/ ]; then
-	git clone $git_prefix/inobulles/aqua-compiler --depth 1 -b master
-	mv aqua-compiler/ src/compiler/
-fi ) &
+if [ $compile_compiler = true ] && [ ! -d src/compiler/ ]; then
+	git clone $git_prefix/inobulles/aqua-compiler src/compiler/ --depth 1 -b main &
+fi
+
+if [ $compile_manager = true ] && [ ! -d src/manager/ ]; then
+	git clone $git_prefix/inobulles/aqua-manager src/manager/ --depth 1 -b main &
+fi
 
 wait
 
-if [ -d src/compiler/ ]; then if [ ! `command -v iar` ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/include/iar.h ]; then
-	read -p "[AQUA Unix Builder] It seems as though you do not have IAR library and command line utility installed on your system. Press enter to install it automatically ... " a
+if [ -d src/compiler/ ] || [ -d src/manager/ ]; then if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/include/iar.h ]; then
+	read -p "[AQUA Unix Builder] It seems as though you do not have IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
 	echo "[AQUA Unix Builder] Installing IAR ..."
 
-	git clone https://github.com/inobulles/iar --depth 1 -b master
-	( cd iar/
+	iar_folder=/tmp/iar-$(date +%s)/
+
+	git clone https://github.com/inobulles/iar $iar_folder --depth 1 -b main
+	
+	( cd $iar_folder
 	sh build.sh )
-	rm -rf iar/
+
+	rm -rf $iar_folder
 fi; fi
 
 # update
@@ -136,17 +129,17 @@ if [ $update = true ]; then
 	echo "[AQUA Unix Builder] Updating components ..."
 
 	( cd src/kos/
-	git pull origin master ) &
+	git pull origin main ) &
 
-	( cd src/kos/zvm/
-	git pull origin master ) &
+	( cd src/zvm/
+	git pull origin main ) &
 
 	( cd src/devices/
-	git pull origin master ) &
+	git pull origin main ) &
 
 	( if [ -d src/compiler ]; then
 		cd src/compiler/
-		git pull origin master
+		git pull origin main
 	fi ) &
 
 	wait
@@ -161,26 +154,35 @@ if [ $compile_compiler = true ]; then
 	mkdir -p bin/compiler/langs/
 	mkdir -p bin/compiler/targs/
 
-	cc src/compiler/compile.c -o bin/compiler/compile \
-		-DCOMPILER_DIR_PATH=\"$data_path/compiler/\" $cc_flags &
+	cc src/compiler/main.c -o bin/compiler/compiler \
+		-DCOMPILER_DIR_PATH=\"$AQUA_DATA_PATH/compiler/\" $cc_flags &
 
 	( cd src/compiler/langs/
-	for path in `find . -maxdepth 1 -type d -not -name ".*" | cut -c3-`; do
-		( echo "[AQUA Unix Builder] Compiling $path language ..."
-		cd $path
+	for path in $(find . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+		echo "[AQUA Unix Builder] Compiling $path language ..."
+		
+		( cd $path
 		sh build.sh $cc_flags
 		mv bin ../../../../bin/compiler/langs/$path ) & # there has to be a better way than doing ../../../../ lmao
 	done
 	wait ) &
 
 	( cd src/compiler/targs/
-	for path in `find . -maxdepth 1 -type d -not -name ".*" | cut -c3-`; do
-		( echo "[AQUA Unix Builder] Compiling $path target ..."
-		cd $path
+	for path in $(find . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+		echo "[AQUA Unix Builder] Compiling $path target ..."
+		
+		( cd $path
 		sh build.sh $cc_flags
 		mv bin ../../../../bin/compiler/targs/$path ) &
 	done
 	wait ) &
+fi
+
+# compiler manager
+
+if [ $compile_manager = true ]; then
+	echo "[AQUA Unix Builder] Compiling manager ..."
+	cc src/manager/main.c -o bin/manager $cc_flags &
 fi
 
 # compile devices
@@ -192,11 +194,15 @@ if [ $compile_devices = true ]; then
 	mkdir -p bin/devices/
 
 	( cd src/devices
-	for path in `find . -maxdepth 1 -type d -not -name ".*" | cut -c3-`; do
+	for path in $(find . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		( echo "[AQUA Unix Builder] Compiling $path device ..."
 		cd $path
 		sh build.sh $cc_flags
-		mv device ../../../bin/devices/$path ) &
+		mv device ../../../bin/devices/$path.device
+		
+		if [ -d assets/ ]; then
+			cp -R assets/ ../../../bin/devices/$path
+		fi ) &
 	done
 	wait ) &
 fi
@@ -206,7 +212,7 @@ fi
 if [ $compile_kos = true ]; then
 	echo "[AQUA Unix Builder] Compiling KOS ..."
 	rm -f bin/kos
-	cc src/kos/glue.c -o bin/kos -ldl $cc_flags &
+	cc src/kos/main.c -o bin/kos -ldl $cc_flags &
 fi
 
 # install
@@ -215,29 +221,34 @@ wait # wait until everything has finished compiling
 
 if [ $install = true ]; then
 	echo "[AQUA Unix Builder] Installing binaries ..."
-	su_list="cp `pwd`/bin/kos $bin_path"
+	su_list="cp $(pwd)/bin/kos $AQUA_BIN_PATH"
 
-	if [ ! -d $root_path ]; then
+	if [ ! -d $AQUA_ROOT_PATH ]; then
 		echo "[AQUA Unix Builder] Downloading default root directory ..."
-		git clone $git_prefix/inobulles/aqua-root $root_path --depth 1 -b master
+		git clone $git_prefix/inobulles/aqua-root $AQUA_ROOT_PATH --depth 1 -b main
 	fi
 
 	echo "[AQUA Unix Builder] Creating config files ..."
 	
-	su_list="$su_list && rm -rf $data_path"
+	su_list="$su_list && rm -rf $AQUA_DATA_PATH"
 	
-	su_list="$su_list && mkdir -p $data_path"
-	su_list="$su_list && cp -r `pwd`/bin/devices $data_path"
+	su_list="$su_list && mkdir -p $AQUA_DATA_PATH"
+	su_list="$su_list && cp -r $(pwd)/bin/devices $AQUA_DATA_PATH"
 
 	if [ -d bin/compiler/ ]; then
 		echo "[AQUA Unix Builder] Installing compiler ..."
 
-		su_list="$su_list && cp -r `pwd`/bin/compiler $data_path"
+		su_list="$su_list && cp -r $(pwd)/bin/compiler $AQUA_DATA_PATH"
 
-		echo -e "#!/bin/sh\nset -e\n$data_path/compiler/compile \"\$@\"\nexit 0" > bin/compile
-		chmod +x bin/compile
+		echo -e "#!/bin/sh\nset -e\n$AQUA_DATA_PATH/compiler/compiler \"\$@\"\nexit 0" > bin/compiler.sh
+		chmod +x bin/compiler.sh
 
-		su_list="$su_list && mv `pwd`/bin/compile $bin_path-compile"
+		su_list="$su_list && mv $(pwd)/bin/compiler.sh $AQUA_BIN_PATH-compiler"
+	fi
+
+	if [ -f bin/manager ]; then
+		echo "[AQUA Unix Builder] Installing manager ..."
+		su_list="$su_list && mv $(pwd)/bin/manager $AQUA_BIN_PATH-manager"
 	fi
 
 	su -l root -c "$su_list"
@@ -249,9 +260,9 @@ if [ $uninstall = true ]; then
 	echo "[AQUA Unix Builder] Uninstalling binaries ..."
 	
 	rm -rf bin
-	su -l root -c "rm -rf $bin_path $bin_path-compile $data_path"
+	su -l root -c "rm -rf $AQUA_BIN_PATH $AQUA_BIN_PATH-compiler $AQUA_BIN_PATH-manager $AQUA_DATA_PATH"
 
-	echo -e "[AQUA Unix Builder] \e[41mIMPORTANT:\e[0m The AQUA root directory ($root_path) is not deleted by this command. You'll have to delete it manually if you want it gone."
+	echo -e "[AQUA Unix Builder] \e[41mIMPORTANT:\e[0m The AQUA root directory ($AQUA_ROOT_PATH) is not deleted by this command. You'll have to delete it manually if you want it gone."
 fi
 
 echo "[AQUA Unix Builder] Done"
