@@ -297,7 +297,7 @@ if [ $uninstall = true ]; then
 	rm -rf bin
 	su -l root -c "rm -rf $AQUA_BIN_PATH $AQUA_BIN_PATH-compiler $AQUA_BIN_PATH-manager $AQUA_DATA_PATH"
 
-	echo -e "[AQUA Unix Builder] \e[41mIMPORTANT:\e[0m The AQUA root directory ($AQUA_ROOT_PATH) is not deleted by this command. You'll have to delete it manually if you want it gone."
+	echo -e "[AQUA Unix Builder] \e[41mIMPORTANT:\e[0m The AQUA root directory ($AQUA_ROOT_PATH) is not deleted by this command. You'll have to delete it manually if you want it gone, nor are the files installed by 'iar' (in case 'iar' was installed with this tool)."
 fi
 
 echo "[AQUA Unix Builder] Done"
