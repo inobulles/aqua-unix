@@ -158,19 +158,19 @@ if [ $update = true ]; then
 	echo "[AQUA Unix Builder] Updating components ..."
 
 	( cd src/kos/
-	git pull ) &
+	git pull origin main ) &
 
 	( cd src/zvm/
-	git pull ) &
+	git pull origin main ) &
 
 	( cd src/devices/
 	git fetch
 	git checkout $devbranch
-	git pull ) &
+	git pull origin $devbranch ) &
 
 	( if [ -d src/compiler ]; then
 		cd src/compiler/
-		git pull
+		git pull origin main
 	fi ) &
 
 	wait
