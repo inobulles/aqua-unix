@@ -5,33 +5,11 @@ set -e
 
 # flags
 
-export AQUA_ROOT_PATH=~/.aqua-root/
+export AQUA_ROOT_PATH=$HOME/.aqua-root/
 export AQUA_DATA_PATH=/usr/share/aqua/
 export AQUA_BIN_PATH=/usr/local/bin/aqua
 export AQUA_INC_PATH=/usr/local/include/
 export AQUA_LIB_PATH=/usr/local/lib/
-
-# note that we need to link libiar statically (because of an apparent bug with the readdir function with clang on FreeBSD)
-
-cc_flags="
-	-g
-	-std=c99
-	-I$AQUA_INC_PATH
-	-L$AQUA_LIB_PATH
-	$AQUA_LIB_PATH/libiar.a
-	-Wno-unused-command-line-argument
-	-I$(realpath src/zvm/)
-	-DKOS_DEFAULT_DEVICES_PATH=\"$AQUA_DATA_PATH/devices/\"
-	-DKOS_DEFAULT_ROOT_PATH=\"$AQUA_ROOT_PATH\"
-	-DKOS_DEFAULT_BOOT_PATH=\"$AQUA_ROOT_PATH/boot.zpk\""
-
-if [ -d src/compiler/ ]; then
-	cc_flags="$cc_flags -I$(realpath src/compiler/)"
-fi
-
-if [ -d src/devices/ ]; then
-	cc_flags="$cc_flags -I$(realpath src/devices/)"
-fi
 
 # parse arguments
 
@@ -66,6 +44,55 @@ while test $# -gt 0; do
 
 	shift
 done
+
+# download missing components
+
+echo "[AQUA Unix Builder] Downloading potentially missing components ..."
+
+if [ ! -d src/kos/ ]; then
+	git clone $git_prefix/inobulles/aqua-kos src/kos/ --depth 1 -b main &
+fi
+
+if [ ! -d src/zvm/ ]; then
+	git clone $git_prefix/inobulles/aqua-zvm src/zvm/ --depth 1 -b main &
+fi
+
+if [ ! -d src/devices/ ]; then
+	git clone $git_prefix/inobulles/aqua-devices src/devices/ -b $devbranch &
+fi
+
+if [ $compile_compiler = true ] && [ ! -d src/compiler/ ]; then
+	git clone $git_prefix/inobulles/aqua-compiler src/compiler/ --depth 1 -b main &
+fi
+
+if [ $compile_manager = true ] && [ ! -d src/manager/ ]; then
+	git clone $git_prefix/inobulles/aqua-manager src/manager/ --depth 1 -b main &
+fi
+
+wait
+
+# note that we need to link libiar statically (because of an apparent bug with the readdir function with clang on FreeBSD)
+
+cc_flags="
+	-g
+	-std=c99
+	-D_DEFAULT_SOURCE
+	-I$AQUA_INC_PATH
+	-L$AQUA_LIB_PATH
+	$AQUA_LIB_PATH/libiar.a
+	-Wno-unused-command-line-argument
+	-I$(realpath src/zvm/)
+	-DKOS_DEFAULT_DEVICES_PATH=\"$AQUA_DATA_PATH/devices/\"
+	-DKOS_DEFAULT_ROOT_PATH=\"$AQUA_ROOT_PATH\"
+	-DKOS_DEFAULT_BOOT_PATH=\"$AQUA_ROOT_PATH/boot.zpk\""
+
+if [ -d src/compiler/ ]; then
+	cc_flags="$cc_flags -I$(realpath src/compiler/)"
+fi
+
+if [ -d src/devices/ ]; then
+	cc_flags="$cc_flags -I$(realpath src/devices/)"
+fi
 
 # setup
 
@@ -111,7 +138,7 @@ fi
 
 wait
 
-if [ -d src/compiler/ ] || [ -d src/manager/ ]; then if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/include/iar.h ]; then
+if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/include/iar.h ]; then
 	read -p "[AQUA Unix Builder] It seems as though you do not have IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
 	echo "[AQUA Unix Builder] Installing IAR ..."
 
@@ -123,7 +150,7 @@ if [ -d src/compiler/ ] || [ -d src/manager/ ]; then if [ ! $(command -v iar) ] 
 	sh build.sh )
 
 	rm -rf $iar_folder
-fi; fi
+fi
 
 # update
 
