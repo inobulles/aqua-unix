@@ -17,7 +17,7 @@ echo "[AQUA Unix Builder] AQUA Unix Builder"
 echo "[AQUA Unix Builder] Parsing arguments ..."
 
 update=false
-devbranch=core
+devbranch=
 compile_devices=false
 compile_kos=false
 compile_compiler=false
@@ -58,6 +58,10 @@ if [ ! -d src/zvm/ ]; then
 fi
 
 if [ ! -d src/devices/ ]; then
+	if [ ! $devbranch ]; then
+		devbranch=core
+	fi
+	
 	git clone $git_prefix/inobulles/aqua-devices src/devices/ -b $devbranch &
 fi
 
@@ -70,6 +74,40 @@ if [ $compile_manager = true ] && [ ! -d src/manager/ ]; then
 fi
 
 wait
+
+# update
+
+if [ $update = true ]; then
+	echo "[AQUA Unix Builder] Updating components ..."
+
+	( cd src/kos/
+	git pull origin main ) &
+
+	( cd src/zvm/
+	git pull origin main ) &
+
+	( cd src/devices/
+	
+	if [ ! $devbranch ]; then
+		devbranch=$(git symbolic-ref --short HEAD)
+	fi
+	
+	git fetch
+	git checkout $devbranch
+	git pull origin $devbranch ) &
+
+	( if [ -d src/compiler ]; then
+		cd src/compiler/
+		git pull origin main
+	fi ) &
+
+	( if [ -d src/manager ]; then
+		cd src/manager/
+		git pull origin main
+	fi ) &
+
+	wait
+fi
 
 # note that we need to link libiar statically (because of an apparent bug with the readdir function with clang on FreeBSD)
 
@@ -101,7 +139,7 @@ echo "[AQUA Unix Builder] Setting up ..."
 mkdir -p src/
 mkdir -p bin/
 
-if [ $install = true ]; then
+if [ $install = true ]; then # make sure that, if we're installing, both the KOS and devices are compiled
 	if [ $uninstall = true ]; then
 		echo "[AQUA Unix Builder] ERROR Both the '--uninstall' and '--install' arguments were passed"
 		install=false
@@ -110,30 +148,6 @@ if [ $install = true ]; then
 
 	if [ ! -f bin/kos ]; then compile_kos=true; fi
 	if [ ! -d bin/devices/ ]; then compile_devices=true; fi
-fi
-
-# download missing components
-
-echo "[AQUA Unix Builder] Downloading potentially missing components ..."
-
-if [ ! -d src/kos/ ]; then
-	git clone $git_prefix/inobulles/aqua-kos src/kos/ --depth 1 -b main &
-fi
-
-if [ ! -d src/zvm/ ]; then
-	git clone $git_prefix/inobulles/aqua-zvm src/zvm/ --depth 1 -b main &
-fi
-
-if [ ! -d src/devices/ ]; then
-	git clone $git_prefix/inobulles/aqua-devices src/devices/ -b $devbranch &
-fi
-
-if [ $compile_compiler = true ] && [ ! -d src/compiler/ ]; then
-	git clone $git_prefix/inobulles/aqua-compiler src/compiler/ --depth 1 -b main &
-fi
-
-if [ $compile_manager = true ] && [ ! -d src/manager/ ]; then
-	git clone $git_prefix/inobulles/aqua-manager src/manager/ --depth 1 -b main &
 fi
 
 wait
@@ -150,30 +164,6 @@ if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/lo
 	sh build.sh )
 
 	rm -rf $iar_folder
-fi
-
-# update
-
-if [ $update = true ]; then
-	echo "[AQUA Unix Builder] Updating components ..."
-
-	( cd src/kos/
-	git pull origin main ) &
-
-	( cd src/zvm/
-	git pull origin main ) &
-
-	( cd src/devices/
-	git fetch
-	git checkout $devbranch
-	git pull origin $devbranch ) &
-
-	( if [ -d src/compiler ]; then
-		cd src/compiler/
-		git pull origin main
-	fi ) &
-
-	wait
 fi
 
 # compile compiler
