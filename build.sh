@@ -65,8 +65,14 @@ if [ ! -d src/devices/ ]; then
 	git clone $git_prefix/inobulles/aqua-devices src/devices/ -b $devbranch &
 fi
 
-if [ $compile_compiler = true ] && [ ! -d src/compiler/ ]; then
-	git clone $git_prefix/inobulles/aqua-compiler src/compiler/ --depth 1 -b main &
+if [ $compile_compiler = true ]; then
+	if [ ! -d src/compiler/ ]; then
+		git clone $git_prefix/inobulles/aqua-compiler src/compiler/ --depth 1 -b main &
+	fi
+
+	if [ ! -d src/lib/ ]; then
+		git clone $git_prefix/inobulles/aqua-lib src/lib/ --depth 1 -b main &
+	fi
 fi
 
 if [ $compile_manager = true ] && [ ! -d src/manager/ ]; then
@@ -96,12 +102,17 @@ if [ $update = true ]; then
 	git checkout $devbranch
 	git pull origin $devbranch ) &
 
-	( if [ -d src/compiler ]; then
+	( if [ -d src/compiler/ ]; then
 		cd src/compiler/
 		git pull origin main
 	fi ) &
 
-	( if [ -d src/manager ]; then
+	( if [ -d src/lib/ ]; then
+		cd src/lib/
+		git pull origin main
+	fi ) &
+
+	( if [ -d src/manager/ ]; then
 		cd src/manager/
 		git pull origin main
 	fi ) &
@@ -151,6 +162,8 @@ if [ $install = true ]; then # make sure that, if we're installing, both the KOS
 fi
 
 wait
+
+# check to see if 'iar' is installed and prompt to install it if it's not
 
 if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/include/iar.h ]; then
 	read -p "[AQUA Unix Builder] It seems as though you do not have IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
@@ -269,6 +282,11 @@ if [ $install = true ]; then
 		chmod +x bin/compiler.sh
 
 		su_list="$su_list && mv $(pwd)/bin/compiler.sh $AQUA_BIN_PATH-compiler"
+	fi
+
+	if [ -d src/lib/ ]; then
+		echo "[AQUA Unix Builder] Installing library ..."
+		su_list="$su_list && cp -r $(pwd)/src/lib $AQUA_DATA_PATH"
 	fi
 
 	if [ -f bin/manager ]; then
