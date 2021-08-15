@@ -21,25 +21,26 @@ By default, `--devbranch` is set to `core`.
 
 ### --devices
 
-Compile all the devices.
+Compile all the devices ([`aqua-devices`](https://github.com/inobulles/aqua-devices), device branch set by `--devbranch`, which is `core` by default). (Their source code is downloaded by default if not already present.)
 
 ### --kos
 
-Compile the KOS.
+Compile the KOS ([`aqua-kos`](https://github.com/inobulles/aqua-kos)). (Its source code is downloaded by default if not already present.)
 
 ### --compiler
 
-Compile the compiler.
+Download the source code of the compiler ([`aqua-compiler`](https://github.com/inobulles/aqua-compiler)) if not already present and compile it.
+This will also download the AQUA library ([`aqua-lib`](https://github.com/inobulles/aqua-lib)) if not already present either.
 
 ### --manager
 
-Compile the manager.
+Download the source code of the project manager utility ([`aqua-manager`](https://github.com/inobulles/aqua-manager)) if not already present and compile it.
 
 ### --install
 
-Install the compiled binaries on the system, download the default AQUA root directory, and create config files if not already created.
+Install the compiled binaries (and AQUA library if available) on the system, download the default AQUA root directory, and create config files if not already created.
 Will automatically compile the KOS and devices if they are not already.
-Note that this will prompt for superuser privileges, as some binaries will need to be installed in system directories.
+Note that this will prompt for superuser privileges, as some files will need to be installed in system directories.
 
 ### --uninstall
 
