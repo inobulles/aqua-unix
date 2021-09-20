@@ -185,7 +185,9 @@ if [ $compile_compiler = true ]; then
 	mkdir -p bin/compiler/
 fi
 
-export COMPILER_BIN=$(realpath bin/compiler/)
+if [ -d bin/compiler/ ]; then
+	export COMPILER_BIN=$(realpath bin/compiler/)
+fi
 
 if [ $compile_compiler = true ]; then
 	echo "[AQUA Unix Builder] Compiling compiler ..."
@@ -233,7 +235,9 @@ if [ $compile_devices = true ]; then
 	mkdir -p bin/devices/
 fi
 
-export DEVICES_BIN=$(realpath bin/devices/)
+if [ -d bin/devices/ ]; then
+	export DEVICES_BIN=$(realpath bin/devices/)
+fi
 
 if [ $compile_devices = true ]; then
 	echo "[AQUA Unix Builder] Compiling devices ..."
@@ -279,15 +283,15 @@ if [ $install = true ]; then
 	fi
 
 	echo "[AQUA Unix Builder] Creating config files ..."
-	
+
 	su_list="$su_list && rm -rf $AQUA_DATA_PATH"
 	su_list="$su_list && mkdir -p $AQUA_DATA_PATH"
 	
-	if [ -d $DEVICES_BIN ]; then
+	if [ -d bin/devices/ ]; then
 		su_list="$su_list && cp -r $DEVICES_BIN $AQUA_DATA_PATH"
 	fi
 
-	if [ -d $COMPILER_BIN ]; then
+	if [ -d bin/compiler/ ]; then
 		echo "[AQUA Unix Builder] Installing compiler ..."
 
 		su_list="$su_list && cp -r $COMPILER_BIN $AQUA_DATA_PATH"
@@ -308,6 +312,7 @@ if [ $install = true ]; then
 		su_list="$su_list && mv $(pwd)/bin/manager $AQUA_BIN_PATH-manager"
 	fi
 
+	echo $su_list
 	su -l root -c "$su_list"
 fi
 
