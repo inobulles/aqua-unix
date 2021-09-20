@@ -11,9 +11,6 @@ export AQUA_BIN_PATH=/usr/local/bin/aqua
 export AQUA_INC_PATH=/usr/local/include/
 export AQUA_LIB_PATH=/usr/local/lib/
 
-export DEVICES_BIN=$(realpath bin/devices/)
-export COMPILER_BIN=$(realpath bin/compiler/)
-
 # parse arguments
 
 echo "[AQUA Unix Builder] AQUA Unix Builder"
@@ -185,6 +182,12 @@ fi
 # compile compiler
 
 if [ $compile_compiler = true ]; then
+	mkdir -p bin/compiler/
+fi
+
+export COMPILER_BIN=$(realpath bin/compiler/)
+
+if [ $compile_compiler = true ]; then
 	echo "[AQUA Unix Builder] Compiling compiler ..."
 
 	rm -rf $COMPILER_BIN
@@ -225,6 +228,12 @@ if [ $compile_manager = true ]; then
 fi
 
 # compile devices
+
+if [ $compile_devices = true ]; then
+	mkdir -p bin/devices/
+fi
+
+export DEVICES_BIN=$(realpath bin/devices/)
 
 if [ $compile_devices = true ]; then
 	echo "[AQUA Unix Builder] Compiling devices ..."
@@ -272,19 +281,21 @@ if [ $install = true ]; then
 	echo "[AQUA Unix Builder] Creating config files ..."
 	
 	su_list="$su_list && rm -rf $AQUA_DATA_PATH"
-	
 	su_list="$su_list && mkdir -p $AQUA_DATA_PATH"
-	su_list="$su_list && cp -r $DEVICES_BIN $AQUA_DATA_PATH"
+	
+	if [ -d $DEVICES_BIN ]; then
+		su_list="$su_list && cp -r $DEVICES_BIN $AQUA_DATA_PATH"
+	fi
 
-	if [ -d bin/compiler/ ]; then
+	if [ -d $COMPILER_BIN ]; then
 		echo "[AQUA Unix Builder] Installing compiler ..."
 
 		su_list="$su_list && cp -r $COMPILER_BIN $AQUA_DATA_PATH"
 
-		echo -e "#!/bin/sh\nset -e\n$AQUA_DATA_PATH/compiler/compiler \"\$@\"\nexit 0" > bin/compiler.sh
-		chmod +x bin/compiler.sh
+		echo -e "#!/bin/sh\nset -e\n$AQUA_DATA_PATH/compiler/compiler \"\$@\"\nexit 0" > $COMPILER_BIN.sh
+		chmod +x $COMPILER_BIN.sh
 
-		su_list="$su_list && mv $(pwd)/bin/compiler.sh $AQUA_BIN_PATH-compiler"
+		su_list="$su_list && mv $COMPILER_BIN.sh $AQUA_BIN_PATH-compiler"
 	fi
 
 	if [ -d src/lib/ ]; then
