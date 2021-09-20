@@ -11,6 +11,9 @@ export AQUA_BIN_PATH=/usr/local/bin/aqua
 export AQUA_INC_PATH=/usr/local/include/
 export AQUA_LIB_PATH=/usr/local/lib/
 
+export DEVICES_BIN=$(realpath bin/devices/)
+export COMPILER_BIN=$(realpath bin/compiler/)
+
 # parse arguments
 
 echo "[AQUA Unix Builder] AQUA Unix Builder"
@@ -184,32 +187,32 @@ fi
 if [ $compile_compiler = true ]; then
 	echo "[AQUA Unix Builder] Compiling compiler ..."
 
-	rm -rf bin/compiler/
-	mkdir -p bin/compiler/langs/
-	mkdir -p bin/compiler/targs/
+	rm -rf $COMPILER_BIN
+	mkdir -p $COMPILER_BIN/langs/
+	mkdir -p $COMPILER_BIN/targs/
 
-	cc src/compiler/main.c -o bin/compiler/compiler \
+	cc src/compiler/main.c -o $COMPILER_BIN/compiler \
 		-DCOMPILER_DIR_PATH=\"$AQUA_DATA_PATH/compiler/\" $cc_flags &
 
 	( cd src/compiler/langs/
-	for path in $(find . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path language ..."
 		
 		( cd $path
 
 		sh build.sh $cc_flags
-		mv bin ../../../../bin/compiler/langs/$path ) & # there has to be a better way than doing ../../../../ lmao
+		mv bin $COMPILER_BIN/langs/$path ) &
 	done
 	wait ) &
 
 	( cd src/compiler/targs/
-	for path in $(find . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path target ..."
 		
 		( cd $path
 
 		sh build.sh $cc_flags
-		mv bin ../../../../bin/compiler/targs/$path ) &
+		mv bin $COMPILER_BIN/targs/$path ) &
 	done
 	wait ) &
 fi
@@ -226,20 +229,20 @@ fi
 if [ $compile_devices = true ]; then
 	echo "[AQUA Unix Builder] Compiling devices ..."
 
-	rm -rf bin/devices/
-	mkdir -p bin/devices/
+	rm -rf $DEVICES_BIN
+	mkdir -p $DEVICES_BIN
 
 	( cd src/devices
-	for path in $(find . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path device ..."
 		
 		( cd $path
 
 		sh build.sh $cc_flags
-		mv device ../../../bin/devices/$path.device
+		mv device $DEVICES_BIN/$path.device
 		
 		if [ -d assets/ ]; then
-			cp -R assets/ ../../../bin/devices/$path
+			cp -R assets/ $DEVICES_BIN/$path
 		fi ) &
 	done
 	wait ) &
@@ -271,12 +274,12 @@ if [ $install = true ]; then
 	su_list="$su_list && rm -rf $AQUA_DATA_PATH"
 	
 	su_list="$su_list && mkdir -p $AQUA_DATA_PATH"
-	su_list="$su_list && cp -r $(pwd)/bin/devices $AQUA_DATA_PATH"
+	su_list="$su_list && cp -r $DEVICES_BIN $AQUA_DATA_PATH"
 
 	if [ -d bin/compiler/ ]; then
 		echo "[AQUA Unix Builder] Installing compiler ..."
 
-		su_list="$su_list && cp -r $(pwd)/bin/compiler $AQUA_DATA_PATH"
+		su_list="$su_list && cp -r $COMPILER_BIN $AQUA_DATA_PATH"
 
 		echo -e "#!/bin/sh\nset -e\n$AQUA_DATA_PATH/compiler/compiler \"\$@\"\nexit 0" > bin/compiler.sh
 		chmod +x bin/compiler.sh
