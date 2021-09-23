@@ -143,6 +143,12 @@ if [ -d src/devices/ ]; then
 	cc_flags="$cc_flags -I$(realpath src/devices/)"
 fi
 
+# detect if we're running under WSL
+
+if [ "$(grep "Microsoft" /proc/version)" ]; then
+	cc_flags="$cc_flags -D__WSL__"
+fi
+
 # setup
 
 echo "[AQUA Unix Builder] Setting up ..."
