@@ -145,7 +145,7 @@ fi
 
 # detect if we're running under WSL
 
-if [ "$(grep "Microsoft" /proc/version)" ]; then
+if [ -f /proc/version ] && [ "$(grep "Microsoft" /proc/version)" ]; then
 	cc_flags="$cc_flags -D__WSL__"
 fi
 
