@@ -6,7 +6,7 @@ set -e
 # flags
 
 export AQUA_ROOT_PATH=$HOME/.aqua-root/
-export AQUA_DATA_PATH=/usr/share/aqua/
+export AQUA_DATA_PATH=/usr/local/share/aqua/
 export AQUA_BIN_PATH=/usr/local/bin/aqua
 export AQUA_INC_PATH=/usr/local/include/
 export AQUA_LIB_PATH=/usr/local/lib/
