@@ -48,6 +48,11 @@ Uninstall everything installed by `--install` and clean up all files.
 This will not remove the AQUA root directory, you'll have to do that manually.
 Note that this will prompt for superuser privileges, as some binaries will need to be removed from system directories.
 
+### --auto-iar
+
+Don't prompt the user when installing the IAR library and command-line utility ([`iar`](https://github.com/inobulles/iar)).
+Useful for automated build scripts.
+
 ### --git-ssh
 
 Use SSH link as origin for cloning git repos.

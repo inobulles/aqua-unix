@@ -24,6 +24,7 @@ compile_compiler=false
 compile_manager=false
 install=false
 uninstall=false
+auto_iar=false
 git_prefix=https://github.com
 
 while test $# -gt 0; do
@@ -35,6 +36,7 @@ while test $# -gt 0; do
 	elif [ $1 = --manager   ]; then compile_manager=true
 	elif [ $1 = --install   ]; then install=true
 	elif [ $1 = --uninstall ]; then uninstall=true
+	elif [ $1 = --auto-iar  ]; then auto_iar=true
 	elif [ $1 = --git-ssh   ]; then git_prefix=ssh://git@github.com
 	
 	else
@@ -172,7 +174,10 @@ wait
 # check to see if 'iar' is installed and prompt to install it if it's not
 
 if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/include/iar.h ]; then
-	read -p "[AQUA Unix Builder] It seems as though you do not have IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
+	if [ $auto_iar = false ]; then
+		read -p "[AQUA Unix Builder] It seems as though you do not have IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
+	fi
+
 	echo "[AQUA Unix Builder] Installing IAR ..."
 
 	iar_folder=/tmp/iar-$(date +%s)/
