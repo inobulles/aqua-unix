@@ -82,8 +82,8 @@ The path where support files for AQUA components are installed (e.g., but not li
 
 ### AQUA_BIN_PATH
 
-The path where AQUA binaries are installed.
-`AQUA_BIN_PATH` is set to `/usr/local/bin/` by default.
+The path and prefix for AQUA binaries.
+`AQUA_BIN_PATH` is set to `/usr/local/bin/aqua` by default.
 
 ### AQUA_INC_PATH
 
