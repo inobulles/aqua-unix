@@ -21,11 +21,13 @@ By default, `--devbranch` is set to `core`.
 
 ### --devices
 
-Compile all the devices ([`aqua-devices`](https://github.com/inobulles/aqua-devices), device branch set by `--devbranch`, which is `core` by default). (Their source code is downloaded by default if not already present.)
+Compile all the devices ([`aqua-devices`](https://github.com/inobulles/aqua-devices), device branch set by `--devbranch`, which is `core` by default).
+(Their source code is downloaded by default if not already present.)
 
 ### --kos
 
-Compile the KOS ([`aqua-kos`](https://github.com/inobulles/aqua-kos)). (Its source code is downloaded by default if not already present.)
+Compile the KOS ([`aqua-kos`](https://github.com/inobulles/aqua-kos)).
+(Its source code is downloaded by default if not already present.)
 
 ### --compiler
 
@@ -57,3 +59,38 @@ Useful for automated build scripts.
 
 Use SSH link as origin for cloning git repos.
 Don't use this argument if you don't know what it does.
+
+## Environment variables
+
+A variety of environment variables can be used to customize the AQUA installation to your choosing.
+Here is a list of them and how to use them.
+You can unset any of these environment variables to return them back to their default values by setting them equal to nothing:
+
+```sh
+% export ENVIRONMENT_VARIABLE=
+```
+
+### AQUA_ROOT_PATH
+
+The path where the AQUA root environment is installed.
+`AQUA_ROOT_PATH` is set to `$HOME/.aqua-root/` by default, where `$HOME` is the path to the current user's home directory.
+
+### AQUA_DATA_PATH
+
+The path where support files for AQUA components are installed (e.g., but not limited to, compiler targets, devices, &c).
+`AQUA_DATA_PATH` is set to `/usr/local/share/aqua/` by default.
+
+### AQUA_BIN_PATH
+
+The path where AQUA binaries are installed.
+`AQUA_BIN_PATH` is set to `/usr/local/bin/` by default.
+
+### AQUA_INC_PATH
+
+The path where AQUA library headers are installed.
+`AQUA_INC_PATH` is set to `/usr/local/include/` by default.
+
+### AQUA_LIB_PATH
+
+The path where AQUA libraries are installed.
+`AQUA_LIB_PATH` is set to `/usr/local/lib/` by default.
