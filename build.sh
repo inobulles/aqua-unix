@@ -5,11 +5,11 @@ set -e
 
 # flags
 
-export AQUA_ROOT_PATH=$HOME/.aqua-root/
-export AQUA_DATA_PATH=/usr/local/share/aqua/
-export AQUA_BIN_PATH=/usr/local/bin/aqua
-export AQUA_INC_PATH=/usr/local/include/
-export AQUA_LIB_PATH=/usr/local/lib/
+[ -z $AQUA_ROOT_PATH ] && export AQUA_ROOT_PATH=$HOME/.aqua-root/
+[ -z $AQUA_DATA_PATH ] && export AQUA_DATA_PATH=/usr/local/share/aqua/
+[ -z $AQUA_BIN_PATH  ] && export AQUA_BIN_PATH=/usr/local/bin/aqua
+[ -z $AQUA_INC_PATH  ] && export AQUA_INC_PATH=/usr/local/include/
+[ -z $AQUA_LIB_PATH  ] && export AQUA_LIB_PATH=/usr/local/lib/
 
 # parse arguments
 
@@ -122,7 +122,7 @@ if [ $update = true ]; then
 	wait
 fi
 
-# note that we need to link libiar statically (because of an apparent bug with the readdir function with clang on FreeBSD)
+# note that we need to link libiar statically (cf. IAR 'main.c')
 
 cc_flags="
 	-g
