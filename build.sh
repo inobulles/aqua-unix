@@ -11,7 +11,8 @@ set -e
 [ -z $AQUA_INC_PATH  ] && export AQUA_INC_PATH=/usr/local/include/
 [ -z $AQUA_LIB_PATH  ] && export AQUA_LIB_PATH=/usr/local/lib/
 
-device_cc_flags="-DAQUABSD_ALPS_UI_WITHOUT_OGL"
+#device_cc_flags="-DAQUABSD_ALPS_UI_WITHOUT_OGL"
+device_cc_flags=""
 
 # parse arguments
 
