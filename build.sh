@@ -11,6 +11,8 @@ set -e
 [ -z $AQUA_INC_PATH  ] && export AQUA_INC_PATH=/usr/local/include/
 [ -z $AQUA_LIB_PATH  ] && export AQUA_LIB_PATH=/usr/local/lib/
 
+device_cc_flags="-DAQUABSD_ALPS_UI_WITHOUT_OGL"
+
 # parse arguments
 
 echo "[AQUA Unix Builder] AQUA Unix Builder"
@@ -262,7 +264,7 @@ if [ $compile_devices = true ]; then
 		
 		( cd $path
 
-		sh build.sh $cc_flags
+		sh build.sh $cc_flags $device_cc_flags
 		mv device $DEVICES_BIN/$path.device
 		
 		if [ -d assets/ ]; then
