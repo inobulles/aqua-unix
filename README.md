@@ -94,3 +94,9 @@ The path where AQUA library headers are installed.
 
 The path where AQUA libraries are installed.
 `AQUA_LIB_PATH` is set to `/usr/local/lib/` by default.
+
+### AQUA_DEV_FLAGS
+
+Flags to be passed to the compiler during the compilation of devices.
+Usually this is used to set compile-time flags for devices, e.g. the `AQUABSD_ALPS_UI_WITHOUT_OGL` flag for disabling the OpenGL backend when compiling the `aquabsd.alps.ui` device.
+`AQUA_DEV_FLAGS` is set to nothing by default.

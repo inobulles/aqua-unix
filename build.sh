@@ -10,8 +10,7 @@ set -e
 [ -z $AQUA_BIN_PATH  ] && export AQUA_BIN_PATH=/usr/local/bin/aqua
 [ -z $AQUA_INC_PATH  ] && export AQUA_INC_PATH=/usr/local/include/
 [ -z $AQUA_LIB_PATH  ] && export AQUA_LIB_PATH=/usr/local/lib/
-
-device_cc_flags=""
+[ -z $AQUA_DEV_FLAGS ] && export AQUA_DEV_FLAGS=
 
 # parse arguments
 
@@ -264,7 +263,7 @@ if [ $compile_devices = true ]; then
 		
 		( cd $path
 
-		sh build.sh $cc_flags $device_cc_flags
+		sh build.sh $cc_flags $AQUA_DEV_FLAGS
 		mv device $DEVICES_BIN/$path.device
 		
 		if [ -d assets/ ]; then
