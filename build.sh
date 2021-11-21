@@ -11,7 +11,6 @@ set -e
 [ -z $AQUA_INC_PATH  ] && export AQUA_INC_PATH=/usr/local/include/
 [ -z $AQUA_LIB_PATH  ] && export AQUA_LIB_PATH=/usr/local/lib/
 
-#device_cc_flags="-DAQUABSD_ALPS_UI_WITHOUT_OGL"
 device_cc_flags=""
 
 # parse arguments
@@ -280,7 +279,7 @@ fi
 if [ $compile_kos = true ]; then
 	echo "[AQUA Unix Builder] Compiling KOS ..."
 	rm -f bin/kos
-	cc src/kos/main.c -o bin/kos -ldl $cc_flags &
+	cc src/kos/main.c -o bin/kos -ldl -pthread -lm $cc_flags &
 fi
 
 # install
