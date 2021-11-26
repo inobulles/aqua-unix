@@ -127,6 +127,7 @@ fi
 
 cc_flags="
 	-g
+	-pthread -lm
 	-std=c99
 	-D_DEFAULT_SOURCE
 	-I$AQUA_INC_PATH
@@ -278,7 +279,7 @@ fi
 if [ $compile_kos = true ]; then
 	echo "[AQUA Unix Builder] Compiling KOS ..."
 	rm -f bin/kos
-	cc src/kos/main.c -o bin/kos -ldl -pthread -lm $cc_flags &
+	cc src/kos/main.c -o bin/kos -ldl $cc_flags &
 fi
 
 # install
