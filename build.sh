@@ -239,7 +239,7 @@ fi
 
 if [ $compile_manager = true ]; then
 	echo "[AQUA Unix Builder] Compiling manager ..."
-	cc src/manager/main.c -o bin/manager $cc_flags &
+	cc src/manager/main.c -o bin/manager -lcjson $cc_flags &
 fi
 
 # compile devices
