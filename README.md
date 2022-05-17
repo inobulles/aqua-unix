@@ -1,6 +1,6 @@
 # aqua-unix
 
-A script for automatically building and installing AQUA on Unix-based systems.
+A script for automatically building and installing AQUA on Unix-like systems.
 This help document only applies to the `build.sh` script.
 If you need help using the `aqua` command, read `src/kos/README.md`, if you need help using the compiler, read `src/compiler/README.md`, and if you need help using the manager, read `src/manager/README.md`.
 
