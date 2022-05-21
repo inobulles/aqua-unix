@@ -123,16 +123,14 @@ if [ $update = true ]; then
 	wait
 fi
 
-# note that we need to link libiar statically (cf. IAR 'main.c')
-
 cc_flags="
 	-g
-	-pthread -lm
+	-pthread -lm -lexecinfo
 	-std=c99
 	-D_DEFAULT_SOURCE
 	-I$AQUA_INC_PATH
 	-L$AQUA_LIB_PATH
-	$AQUA_LIB_PATH/libiar.a
+	-liar
 	-Wno-unused-command-line-argument
 	-I$(realpath src/zvm/)
 	-DKOS_DEFAULT_DEVICES_PATH=\"$AQUA_DATA_PATH/devices/\"
