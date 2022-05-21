@@ -68,7 +68,12 @@ Note that this will prompt for superuser privileges, as some binaries will need 
 
 ### --auto-iar
 
-Don't prompt the user when installing the IAR library and command-line utility ([`iar`](https://github.com/inobulles/iar)).
+Don't prompt the user when installing the [IAR](https://github.com/inobulles/iar) library and command-line utility.
+Useful for automated build scripts.
+
+### --auto-umber
+
+Don't prompt the user when installing the [Umber](https://github.com/inobulles/umber) library.
 Useful for automated build scripts.
 
 ### --git-ssh

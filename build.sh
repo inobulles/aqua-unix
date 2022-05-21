@@ -26,19 +26,21 @@ compile_manager=false
 install=false
 uninstall=false
 auto_iar=false
+auto_umber=false
 git_prefix=https://github.com
 
 while test $# -gt 0; do
-	if   [ $1 = --update    ]; then update=true
-	elif [ $1 = --devbranch ]; then devbranch=$2 && shift
-	elif [ $1 = --devices   ]; then compile_devices=true
-	elif [ $1 = --kos       ]; then compile_kos=true
-	elif [ $1 = --compiler  ]; then compile_compiler=true
-	elif [ $1 = --manager   ]; then compile_manager=true
-	elif [ $1 = --install   ]; then install=true
-	elif [ $1 = --uninstall ]; then uninstall=true
-	elif [ $1 = --auto-iar  ]; then auto_iar=true
-	elif [ $1 = --git-ssh   ]; then git_prefix=ssh://git@github.com
+	if   [ $1 = --update     ]; then update=true
+	elif [ $1 = --devbranch  ]; then devbranch=$2 && shift
+	elif [ $1 = --devices    ]; then compile_devices=true
+	elif [ $1 = --kos        ]; then compile_kos=true
+	elif [ $1 = --compiler   ]; then compile_compiler=true
+	elif [ $1 = --manager    ]; then compile_manager=true
+	elif [ $1 = --install    ]; then install=true
+	elif [ $1 = --uninstall  ]; then uninstall=true
+	elif [ $1 = --auto-iar   ]; then auto_iar=true
+	elif [ $1 = --auto-umber ]; then auto_umber=true
+	elif [ $1 = --git-ssh    ]; then git_prefix=ssh://git@github.com
 	
 	else
 		echo "[AQUA Unix Builder] ERROR Unknown argument '$1' (read README.md for help)"
@@ -174,21 +176,40 @@ wait
 
 # check to see if 'iar' is installed and prompt to install it if it's not
 
-if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/include/iar.h ]; then
+if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/lib/libiar.so ] || [ ! -f /usr/local/include/iar.h ]; then
 	if [ $auto_iar = false ]; then
-		read -p "[AQUA Unix Builder] It seems as though you do not have IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
+		read -p "[AQUA Unix Builder] It seems as though you do not have the IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
 	fi
 
 	echo "[AQUA Unix Builder] Installing IAR ..."
 
-	iar_folder=/tmp/iar-$(date +%s)/
+	iar_dir=$(mktemp -dt iar-XXXXXXX)
 
-	git clone https://github.com/inobulles/iar $iar_folder --depth 1 -b main
+	git clone https://github.com/inobulles/iar $iar_dir --depth 1 -b main
 	
-	( cd $iar_folder
+	( cd $iar_dir
 	sh build.sh )
 
-	rm -rf $iar_folder
+	rm -rf $iar_dir
+fi
+
+# check to see if libumber is installed and prompt to install it if it's not
+
+if [ ! -f /usr/local/lib/libumber.a ] || [ ! -f /usr/local/lib/libumber.so ] || [ ! -f /usr/local/include/umber.h ]; then
+	if [ $auto_umber = false ]; then
+		read -p "[AQUA Unix Builder] It seems as though you do not have the Umber library installed on your system. Press enter to install it automatically ... " _
+	fi
+
+	echo "[AQUA Unix Builder] Installing Umber ..."
+
+	umber_dir=$(mktemp -dt umber-XXXXXXX)
+
+	git clone https://github.com/inobulles/umber $umber_dir --depth 1 -b main
+
+	( cd $umber_dir
+	sh build.sh )
+
+	rm -rf $umber_dir
 fi
 
 # compile compiler
@@ -336,7 +357,7 @@ if [ $uninstall = true ]; then
 	rm -rf bin
 	su -l root -c "rm -rf $AQUA_BIN_PATH $AQUA_BIN_PATH-compiler $AQUA_BIN_PATH-manager $AQUA_DATA_PATH"
 
-	echo -e "[AQUA Unix Builder] \e[41mIMPORTANT:\e[0m The AQUA root directory ($AQUA_ROOT_PATH) is not deleted by this command. You'll have to delete it manually if you want it gone, nor are the files installed by 'iar' (in case 'iar' was installed with this tool)."
+	echo -e "[AQUA Unix Builder] \e[41mIMPORTANT:\e[0m The AQUA root directory ($AQUA_ROOT_PATH) is not deleted by this command. You'll have to delete it manually if you want it gone, nor are the files installed by IAR or Umber (in case they were installed with this tool)."
 fi
 
 echo "[AQUA Unix Builder] Done"
