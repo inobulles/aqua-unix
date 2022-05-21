@@ -131,6 +131,7 @@ cc_flags="
 	-I$AQUA_INC_PATH
 	-L$AQUA_LIB_PATH
 	-liar
+	-lumber
 	-Wno-unused-command-line-argument
 	-I$(realpath src/zvm/)
 	-DKOS_DEFAULT_DEVICES_PATH=\"$AQUA_DATA_PATH/devices/\"
