@@ -41,7 +41,7 @@ while test $# -gt 0; do
 	elif [ $1 = --auto-iar   ]; then auto_iar=true
 	elif [ $1 = --auto-umber ]; then auto_umber=true
 	elif [ $1 = --git-ssh    ]; then git_prefix=ssh://git@github.com
-	
+
 	else
 		echo "[AQUA Unix Builder] ERROR Unknown argument '$1' (read README.md for help)"
 		exit 1
@@ -66,7 +66,7 @@ if [ ! -d src/devices/ ]; then
 	if [ ! $devbranch ]; then
 		devbranch=core
 	fi
-	
+
 	git clone $git_prefix/inobulles/aqua-devices src/devices/ -b $devbranch &
 fi
 
@@ -98,11 +98,11 @@ if [ $update = true ]; then
 	git pull origin main ) &
 
 	( cd src/devices/
-	
+
 	if [ ! $devbranch ]; then
 		devbranch=$(git symbolic-ref --short HEAD)
 	fi
-	
+
 	git fetch
 	git checkout $devbranch
 	git pull origin $devbranch ) &
@@ -135,18 +135,10 @@ cc_flags="
 	-liar
 	-lumber
 	-Wno-unused-command-line-argument
-	-I$(realpath src/zvm/)
+	-Isrc/zvm
 	-DKOS_DEFAULT_DEVICES_PATH=\"$AQUA_DATA_PATH/devices/\"
 	-DKOS_DEFAULT_ROOT_PATH=\"$AQUA_ROOT_PATH\"
 	-DKOS_DEFAULT_BOOT_PATH=\"$AQUA_ROOT_PATH/boot.zpk\""
-
-if [ -d src/compiler/ ]; then
-	cc_flags="$cc_flags -I$(realpath src/compiler/)"
-fi
-
-if [ -d src/devices/ ]; then
-	cc_flags="$cc_flags -I$(realpath src/devices/)"
-fi
 
 # detect if we're running under WSL
 
@@ -186,7 +178,7 @@ if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/lo
 	iar_dir=$(mktemp -dt iar-XXXXXXX)
 
 	git clone https://github.com/inobulles/iar $iar_dir --depth 1 -b main
-	
+
 	( cd $iar_dir
 	sh build.sh )
 
@@ -229,30 +221,34 @@ if [ $compile_compiler = true ]; then
 	mkdir -p $COMPILER_BIN/langs/
 	mkdir -p $COMPILER_BIN/targs/
 
-	cc src/compiler/main.c -o $COMPILER_BIN/compiler \
+	pushd src/compiler
+
+	cc main.c -o $COMPILER_BIN/compiler -I. \
 		-DCOMPILER_DIR_PATH=\"$AQUA_DATA_PATH/compiler/\" $cc_flags &
 
-	( cd src/compiler/langs/
+	( cd langs
 	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path language ..."
-		
+
 		( cd $path
 
-		sh build.sh $cc_flags
+		sh build.sh -I.. $cc_flags
 		mv bin $COMPILER_BIN/langs/$path ) &
 	done
 	wait ) &
 
-	( cd src/compiler/targs/
+	( cd targs
 	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path target ..."
-		
+
 		( cd $path
 
-		sh build.sh $cc_flags
+		sh build.sh -I.. $cc_flags
 		mv bin $COMPILER_BIN/targs/$path ) &
 	done
 	wait ) &
+
+	popd src/compiler
 fi
 
 # compiler manager
@@ -281,12 +277,12 @@ if [ $compile_devices = true ]; then
 	( cd src/devices
 	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path device ..."
-		
+
 		( cd $path
 
-		sh build.sh $cc_flags $AQUA_DEV_FLAGS
+		sh build.sh -I.. $cc_flags $AQUA_DEV_FLAGS
 		mv device $DEVICES_BIN/$path.device
-		
+
 		if [ -d assets/ ]; then
 			cp -R assets/ $DEVICES_BIN/$path
 		fi ) &
@@ -319,7 +315,7 @@ if [ $install = true ]; then
 
 	su_list="$su_list && rm -rf $AQUA_DATA_PATH"
 	su_list="$su_list && mkdir -p $AQUA_DATA_PATH"
-	
+
 	if [ -d bin/devices/ ]; then
 		su_list="$su_list && cp -r $DEVICES_BIN $AQUA_DATA_PATH"
 	fi
@@ -353,7 +349,7 @@ fi
 
 if [ $uninstall = true ]; then
 	echo "[AQUA Unix Builder] Uninstalling binaries ..."
-	
+
 	rm -rf bin
 	su -l root -c "rm -rf $AQUA_BIN_PATH $AQUA_BIN_PATH-compiler $AQUA_BIN_PATH-manager $AQUA_DATA_PATH"
 
