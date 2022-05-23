@@ -278,10 +278,9 @@ if [ $compile_devices = true ]; then
 	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path device ..."
 
-		( cd $path
-
-		sh build.sh -I.. $cc_flags $AQUA_DEV_FLAGS
-		mv device $DEVICES_BIN/$path.device
+		( sh $path/build.sh -I. \
+			$path/main.c -o $DEVICES_BIN/$path.device \
+			$cc_flags $AQUA_DEV_FLAGS
 
 		if [ -d assets/ ]; then
 			cp -R assets/ $DEVICES_BIN/$path
