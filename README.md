@@ -11,13 +11,13 @@ While not all of these packages are strictly necessary for all devices on all de
 ### aquaBSD/FreeBSD
 
 ```console
-# pkg install pkgconf libcjson xcb-util-image xcb-util xcb-util-wm librsvg2-rust icu pango
+pkg install pkgconf libcjson xcb-util-image xcb-util xcb-util-wm librsvg2-rust icu pango
 ```
 
 ### Ubuntu
 
 ```console
-# apt install libpng-dev librsvg2-dev libpango1.0-dev libxcb-randr0-dev
+sudo apt install libpng-dev librsvg2-dev libpango1.0-dev libxcb-randr0-dev
 ```
 
 ## Command-line arguments
