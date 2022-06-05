@@ -132,8 +132,8 @@ cc_flags="
 	-D_DEFAULT_SOURCE
 	-I$AQUA_INC_PATH
 	-L$AQUA_LIB_PATH
-	-liar
-	-lumber
+	-liar -lumber
+	-Wall -Werror
 	-Wno-unused-command-line-argument
 	-Isrc/zvm
 	-DKOS_DEFAULT_DEVICES_PATH=\"$AQUA_DATA_PATH/devices/\"
