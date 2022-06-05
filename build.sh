@@ -221,34 +221,32 @@ if [ $compile_compiler = true ]; then
 	mkdir -p $COMPILER_BIN/langs/
 	mkdir -p $COMPILER_BIN/targs/
 
-	pushd src/compiler
+	( cd src/compiler
+		cc main.c -o $COMPILER_BIN/compiler -I. \
+			-DCOMPILER_DIR_PATH=\"$AQUA_DATA_PATH/compiler/\" $cc_flags &
 
-	cc main.c -o $COMPILER_BIN/compiler -I. \
-		-DCOMPILER_DIR_PATH=\"$AQUA_DATA_PATH/compiler/\" $cc_flags &
+		( cd langs
+		for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+			echo "[AQUA Unix Builder] Compiling $path language ..."
 
-	( cd langs
-	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
-		echo "[AQUA Unix Builder] Compiling $path language ..."
+			( cd $path
 
-		( cd $path
+			sh build.sh -I.. $cc_flags
+			mv bin $COMPILER_BIN/langs/$path ) &
+		done
+		wait ) &
 
-		sh build.sh -I.. $cc_flags
-		mv bin $COMPILER_BIN/langs/$path ) &
-	done
+		( cd targs
+		for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+			echo "[AQUA Unix Builder] Compiling $path target ..."
+
+			( cd $path
+
+			sh build.sh -I.. $cc_flags
+			mv bin $COMPILER_BIN/targs/$path ) &
+		done
+		wait ) &
 	wait ) &
-
-	( cd targs
-	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
-		echo "[AQUA Unix Builder] Compiling $path target ..."
-
-		( cd $path
-
-		sh build.sh -I.. $cc_flags
-		mv bin $COMPILER_BIN/targs/$path ) &
-	done
-	wait ) &
-
-	popd src/compiler
 fi
 
 # compiler manager
