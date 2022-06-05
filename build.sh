@@ -127,7 +127,7 @@ fi
 
 cc_flags="
 	-g
-	-pthread -lm -lexecinfo
+	-pthread -lm
 	-std=c99
 	-D_DEFAULT_SOURCE
 	-I$AQUA_INC_PATH
