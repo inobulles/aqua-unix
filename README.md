@@ -17,7 +17,7 @@ pkg install pkgconf libcjson xcb-util-image xcb-util xcb-util-wm librsvg2-rust i
 ### Ubuntu
 
 ```console
-sudo apt install libpng-dev librsvg2-dev libpango1.0-dev libxcb-randr0-dev
+sudo apt install libpng-dev librsvg2-dev libpango1.0-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-xfixes0-dev libxcb-util-dev libxcb-xinput-dev libxcb-ewmh-dev libxcb-image0-dev libx11-xcb-dev libxcb-composite0-dev libegl1-mesa-dev
 ```
 
 ## Command-line arguments
