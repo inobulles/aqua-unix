@@ -276,7 +276,7 @@ if [ $compile_devices = true ]; then
 	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path device ..."
 
-		( sh $path/build.sh -I. \
+		( sh -x $path/build.sh -I. \
 			$path/main.c -o $DEVICES_BIN/$path.device \
 			$cc_flags $AQUA_DEV_FLAGS
 
