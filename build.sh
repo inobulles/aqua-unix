@@ -126,7 +126,7 @@ if [ $update = true ]; then
 fi
 
 cc_flags="
-	-g
+	-g -O3
 	-pthread -lm
 	-std=c99
 	-D_DEFAULT_SOURCE
