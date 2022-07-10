@@ -94,7 +94,7 @@ You can unset any of these environment variables to return them back to their de
 ### AQUA_ROOT_PATH
 
 The path where the AQUA root environment is installed.
-`AQUA_ROOT_PATH` is set to `$HOME/.aqua-root/` by default, where `$HOME` is the path to the current user's home directory.
+`AQUA_ROOT_PATH` is set to `$HOME/.aqua/` by default, where `$HOME` is the path to the current user's home directory.
 
 ### AQUA_DATA_PATH
 

@@ -5,7 +5,7 @@ set -e
 
 # flags
 
-[ -z $AQUA_ROOT_PATH ] && export AQUA_ROOT_PATH=$HOME/.aqua-root/
+[ -z $AQUA_ROOT_PATH ] && export AQUA_ROOT_PATH=$HOME/.aqua/
 [ -z $AQUA_DATA_PATH ] && export AQUA_DATA_PATH=/usr/local/share/aqua/
 [ -z $AQUA_BIN_PATH  ] && export AQUA_BIN_PATH=/usr/local/bin/aqua
 [ -z $AQUA_INC_PATH  ] && export AQUA_INC_PATH=/usr/local/include/
