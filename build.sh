@@ -127,7 +127,7 @@ fi
 
 cc_flags="
 	-g -O2
-	-lstdthreads -lm
+	-lm
 	-std=c99
 	-D_DEFAULT_SOURCE
 	-I$AQUA_INC_PATH
@@ -144,6 +144,12 @@ cc_flags="
 
 if [ -f /proc/version ] && [ "$(grep "Microsoft" /proc/version)" ]; then
 	cc_flags="$cc_flags -D__WSL__"
+fi
+
+# detect if we're running under FreeBSD or aquaBSD
+
+if [ $(uname) = "FreeBSD" ] || [ $(uname) = "aquaBSD" ]; then
+	cc_flags="$cc_flags -lstdthreads"
 fi
 
 # setup
