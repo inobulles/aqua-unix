@@ -5,6 +5,7 @@ task:
     - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
   amd64_artifacts:
     path: "bin/*"
+    path: "bin/devices/*"
 
 task:
   arm_container:
@@ -13,3 +14,4 @@ task:
     - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
   arm64_artifacts:
     path: "bin/*"
+    path: "bin/devices/*"
