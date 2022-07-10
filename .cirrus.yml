@@ -1,0 +1,15 @@
+task:
+  container:
+    image: gcc:latest
+  build_script:
+    - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
+  amd64_artifacts:
+    path: "bin/*"
+
+task:
+  arm_container:
+    image: gcc:latest
+  build_script:
+    - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
+  arm64_artifacts:
+    path: "bin/*"
