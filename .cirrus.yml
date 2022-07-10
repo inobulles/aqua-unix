@@ -3,8 +3,9 @@ task:
     image: gcc:latest
   build_script:
     - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
-  amd64_artifacts:
-    path: "bin/*"
+  amd64_kos_artifacts:
+    path: "bin/kos"
+  amd64_device_artifacts:
     path: "bin/devices/*"
 
 task:
@@ -12,6 +13,7 @@ task:
     image: gcc:latest
   build_script:
     - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
-  arm64_artifacts:
-    path: "bin/*"
+  arm64_kos_artifacts:
+    path: "bin/kos"
+  arm64_device_artifacts:
     path: "bin/devices/*"
