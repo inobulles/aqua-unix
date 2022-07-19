@@ -29,15 +29,15 @@ They can be chained together to perform multiple actions at once.
 
 Update all local repositories to their latest versions.
 
-### --devbranch
+### --devset
 
-Select the branch (the argument directly following this one) in the [`aqua-devices`](https://github.com/inobulles/aqua-devices) repository to use for the devices.
+Select the device set (the argument directly following this one) in the [`aqua-devices`](https://github.com/inobulles/aqua-devices) repository to use for the devices.
 This won't do anything if either the `src/devices/` directory already exists, either the `--update` argument is not also passed.
-By default, `--devbranch` is set to `core`.
+By default, `--devset` is set to `core`.
 
 ### --devices
 
-Compile all the devices ([`aqua-devices`](https://github.com/inobulles/aqua-devices), device branch set by `--devbranch`, which is `core` by default).
+Compile all the devices ([`aqua-devices`](https://github.com/inobulles/aqua-devices), device set set by `--devset`, which is `core` by default).
 (Their source code is downloaded by default if not already present.)
 
 ### --kos
