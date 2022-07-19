@@ -2,7 +2,7 @@ task:
   container:
     image: gcc:latest
   build_script:
-    - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
+    - sh build.sh --auto-iar --auto-umber --kos --devices
   amd64_kos_artifacts:
     path: "bin/kos"
   amd64_device_artifacts:
@@ -12,7 +12,7 @@ task:
   arm_container:
     image: gcc:latest
   build_script:
-    - sh build.sh --auto-iar --auto-umber --kos --devices --devbranch core
+    - sh build.sh --auto-iar --auto-umber --kos --devices
   arm64_kos_artifacts:
     path: "bin/kos"
   arm64_device_artifacts:
