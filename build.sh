@@ -18,7 +18,7 @@ echo "[AQUA Unix Builder] AQUA Unix Builder"
 echo "[AQUA Unix Builder] Parsing arguments ..."
 
 update=false
-devbranch=
+devset=
 compile_devices=false
 compile_kos=false
 compile_compiler=false
@@ -31,7 +31,7 @@ git_prefix=https://github.com
 
 while test $# -gt 0; do
 	if   [ $1 = --update     ]; then update=true
-	elif [ $1 = --devbranch  ]; then devbranch=$2 && shift
+	elif [ $1 = --devset     ]; then devset=$2 && shift
 	elif [ $1 = --devices    ]; then compile_devices=true
 	elif [ $1 = --kos        ]; then compile_kos=true
 	elif [ $1 = --compiler   ]; then compile_compiler=true
@@ -63,11 +63,7 @@ if [ ! -d src/zvm/ ]; then
 fi
 
 if [ ! -d src/devices/ ]; then
-	if [ ! $devbranch ]; then
-		devbranch=core
-	fi
-
-	git clone $git_prefix/inobulles/aqua-devices src/devices/ -b $devbranch &
+	git clone $git_prefix/inobulles/aqua-devices src/devices/ --depth 1 -b main &
 fi
 
 if [ $compile_compiler = true ]; then
@@ -98,14 +94,7 @@ if [ $update = true ]; then
 	git pull origin main ) &
 
 	( cd src/devices/
-
-	if [ ! $devbranch ]; then
-		devbranch=$(git symbolic-ref --short HEAD)
-	fi
-
-	git fetch
-	git checkout $devbranch
-	git pull origin $devbranch ) &
+	git pull origin main ) &
 
 	( if [ -d src/compiler/ ]; then
 		cd src/compiler/
@@ -266,6 +255,17 @@ fi
 
 if [ $compile_devices = true ]; then
 	mkdir -p bin/devices/
+
+	if [ $devset ]; then
+		echo $devset > src/devices/devset
+
+	elif [ ! -f src/devices/devset ]; then
+		if [ ! $devset ]; then
+			devset=core
+		fi
+
+		echo $devset > src/devices/devset
+	fi
 fi
 
 if [ -d bin/devices/ ]; then
@@ -278,7 +278,7 @@ if [ $compile_devices = true ]; then
 	rm -rf $DEVICES_BIN
 	mkdir -p $DEVICES_BIN
 
-	( cd src/devices
+	( cd src/devices/$(cat src/devices/devset)
 	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path device ..."
 
