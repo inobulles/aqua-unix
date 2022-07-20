@@ -17,7 +17,7 @@ pkg install git-lite icu libcjson librsvg2-rust libxcb mesa-libs pango pkgconf x
 ### Ubuntu
 
 ```console
-sudo apt install libpng-dev librsvg2-dev libpango1.0-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-xfixes0-dev libxcb-util-dev libxcb-xinput-dev libxcb-ewmh-dev libxcb-image0-dev libx11-xcb-dev libxcb-composite0-dev libegl1-mesa-dev
+sudo apt install libegl1-mesa-dev libpango1.0-dev libpng-dev librsvg2-dev libx11-xcb-dev libxcb-composite0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-randr0-dev libxcb-util-dev libxcb-xfixes0-dev libxcb-xinput-dev
 ```
 
 ## Command-line arguments
