@@ -11,7 +11,7 @@ While not all of these packages are strictly necessary for all devices on all de
 ### aquaBSD/FreeBSD
 
 ```console
-pkg install pkgconf libcjson xcb-util-image xcb-util xcb-util-wm librsvg2-rust icu pango
+pkg install git-lite icu libcjson librsvg2-rust libxcb mesa-libs pango pkgconf xcb xcb-util xcb-util-image xcb-util-wm
 ```
 
 ### Ubuntu
