@@ -221,7 +221,7 @@ if [ $compile_compiler = true ]; then
 			-DCOMPILER_DIR_PATH=\"$AQUA_DATA_PATH/compiler/\" $cc_flags &
 
 		( cd langs
-		for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+		for path in $(find -L . -depth 1 -type d -not -name ".*" | cut -c3-); do
 			echo "[AQUA Unix Builder] Compiling $path language ..."
 
 			( cd $path
@@ -232,7 +232,7 @@ if [ $compile_compiler = true ]; then
 		wait ) &
 
 		( cd targs
-		for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+		for path in $(find -L . -depth 1 -type d -not -name ".*" | cut -c3-); do
 			echo "[AQUA Unix Builder] Compiling $path target ..."
 
 			( cd $path
@@ -279,7 +279,7 @@ if [ $compile_devices = true ]; then
 	mkdir -p $DEVICES_BIN
 
 	( cd src/devices/$(cat src/devices/devset)
-	for path in $(find -L . -maxdepth 1 -type d -not -name ".*" | cut -c3-); do
+	for path in $(find -L . -depth 1 -type d -not -name ".*" | cut -c3-); do
 		echo "[AQUA Unix Builder] Compiling $path device ..."
 
 		( sh $path/build.sh -I. \
