@@ -163,7 +163,7 @@ wait
 
 # check to see if 'iar' is installed and prompt to install it if it's not
 
-if [ ! $(command -v iar) ] || [ ! -f /usr/local/lib/libiar.a ] || [ ! -f /usr/local/lib/libiar.so ] || [ ! -f /usr/local/include/iar.h ]; then
+if [ ! $(command -v iar) ] || [ ! -f $AQUA_LIB_PATH/libiar.a ] || [ ! -f $AQUA_LIB_PATH/libiar.so ] || [ ! -f $AQUA_INC_PATH/iar.h ]; then
 	if [ $auto_iar = false ]; then
 		read -p "[AQUA Unix Builder] It seems as though you do not have the IAR library and command line utility installed on your system. Press enter to install it automatically ... " _
 	fi
@@ -182,7 +182,7 @@ fi
 
 # check to see if libumber is installed and prompt to install it if it's not
 
-if [ ! -f /usr/local/lib/libumber.a ] || [ ! -f /usr/local/lib/libumber.so ] || [ ! -f /usr/local/include/umber.h ]; then
+if [ ! -f $AQUA_LIB_PATH/libumber.a ] || [ ! -f $AQUA_LIB_PATH/libumber.so ] || [ ! -f $AQUA_INC_PATH/umber.h ]; then
 	if [ $auto_umber = false ]; then
 		read -p "[AQUA Unix Builder] It seems as though you do not have the Umber library installed on your system. Press enter to install it automatically ... " _
 	fi
