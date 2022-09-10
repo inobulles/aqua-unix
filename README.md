@@ -27,7 +27,7 @@ sudo steamos-readonly disable
 sudo pacman-key --init
 sudo pacman-key --populate archlinux
 sudo pacman -Syu glibc linux-api-headers # reinstall, because some random files were removed by Valve
-sudo pacman -Sy cairo icu libglvnd libpng librsvg libxcb pango xcb-util xcb-util-image xcb-util-wm
+sudo pacman -Sy cairo cjson icu libglvnd libpng librsvg libxcb pango xcb-util xcb-util-image xcb-util-wm
 sudo pacman -Sy gdk-pixbuf2 glib2 harfbuzz xorgproto # for some more missing headers
 ```
 
