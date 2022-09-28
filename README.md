@@ -20,6 +20,17 @@ pkg install git-lite icu libcjson librsvg2-rust libxcb mesa-libs pango pkgconf x
 sudo apt install libegl1-mesa-dev libpango1.0-dev libpng-dev librsvg2-dev libx11-xcb-dev libxcb-composite0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-randr0-dev libxcb-util-dev libxcb-xfixes0-dev libxcb-xinput-dev
 ```
 
+### Steam Deck (Arch Linux)
+
+```console
+sudo steamos-readonly disable
+sudo pacman-key --init
+sudo pacman-key --populate archlinux
+sudo pacman -Syu glibc linux-api-headers # reinstall, because some random files were removed by Valve
+sudo pacman -Sy cairo cjson icu libglvnd libpng librsvg libxcb pango xcb-util xcb-util-image xcb-util-wm
+sudo pacman -Sy gdk-pixbuf2 glib2 harfbuzz xorgproto # for some more missing headers
+```
+
 ## Command-line arguments
 
 Here is a list of all command-line arguments that can be passed to `build.sh` and how to use them.
