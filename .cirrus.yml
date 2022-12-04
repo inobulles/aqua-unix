@@ -1,19 +1,19 @@
+# there aren't any artifacts here, because every component is meant to have its own CI setup
+
 task:
   container:
     image: gcc:latest
+  bob_script:
+    - git clone https://github.com/inobulles/bob
+    - ( cd bob && sh build.sh && sh-bin/bob install )
   build_script:
-    - sh build.sh --auto-iar --auto-umber --kos --devices
-  amd64_kos_artifacts:
-    path: "bin/kos"
-  amd64_device_artifacts:
-    path: "bin/devices/*"
+    - bob test install
 
 task:
   arm_container:
     image: gcc:latest
+  bob_script:
+    - git clone https://github.com/inobulles/bob
+    - ( cd bob && sh build.sh && sh-bin/bob install )
   build_script:
-    - sh build.sh --auto-iar --auto-umber --kos --devices
-  arm64_kos_artifacts:
-    path: "bin/kos"
-  arm64_device_artifacts:
-    path: "bin/devices/*"
+    - bob test install
