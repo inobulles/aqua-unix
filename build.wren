@@ -21,3 +21,10 @@ class Runner {
 var install = {
 	"kos": "%(OS.prefix())/bin/aqua",
 }
+
+// TODO testing
+
+class Tests {
+}
+
+var tests = []
