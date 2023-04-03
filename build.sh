@@ -172,7 +172,7 @@ if [ ! $(command -v iar) ] || [ ! -f $AQUA_LIB_PATH/libiar.a ] || [ ! -f $AQUA_L
 
 	iar_dir=$(mktemp -dt iar-XXXXXXX)
 
-	git clone https://github.com/inobulles/iar $iar_dir --depth 1 -b main
+	git clone https://github.com/inobulles/iar $iar_dir --depth 1 -b no-bob
 
 	( cd $iar_dir
 	sh build.sh )
@@ -191,7 +191,7 @@ if [ ! -f $AQUA_LIB_PATH/libumber.a ] || [ ! -f $AQUA_LIB_PATH/libumber.so ] || 
 
 	umber_dir=$(mktemp -dt umber-XXXXXXX)
 
-	git clone https://github.com/inobulles/umber $umber_dir --depth 1 -b main
+	git clone https://github.com/inobulles/umber $umber_dir --depth 1 -b no-bob
 
 	( cd $umber_dir
 	sh build.sh )
