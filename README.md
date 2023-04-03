@@ -4,7 +4,7 @@ A script for automatically building and installing AQUA on Unix-like systems.
 This help document only applies to the `build.sh` script.
 If you need help using the `aqua` command, read `src/kos/README.md`, if you need help using the compiler, read `src/compiler/README.md`, and if you need help using the manager, read `src/manager/README.md`.
 
-## Prequisites
+## Prerequisites
 
 While not all of these packages are strictly necessary for all devices on all device branches, here they all are per OS if you want to install them for peace of mind.
 
