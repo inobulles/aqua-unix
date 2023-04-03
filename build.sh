@@ -116,7 +116,7 @@ fi
 
 cc_flags="
 	-g -O2
-	-lm
+	-lm -lpthread
 	-std=c99
 	-D_DEFAULT_SOURCE
 	-I$AQUA_INC_PATH
