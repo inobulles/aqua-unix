@@ -4,7 +4,7 @@ A script for automatically building and installing AQUA on Unix-like systems.
 This help document only applies to the `build.sh` script.
 If you need help using the `aqua` command, read `src/kos/README.md`, if you need help using the compiler, read `src/compiler/README.md`, and if you need help using the manager, read `src/manager/README.md`.
 
-## Prequisites
+## Prerequisites
 
 While not all of these packages are strictly necessary for all devices on all device branches, here they all are per OS if you want to install them for peace of mind.
 
@@ -18,6 +18,17 @@ pkg install git-lite icu libcjson librsvg2-rust libxcb mesa-libs pango pkgconf x
 
 ```console
 sudo apt install libegl1-mesa-dev libpango1.0-dev libpng-dev librsvg2-dev libx11-xcb-dev libxcb-composite0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-randr0-dev libxcb-util-dev libxcb-xfixes0-dev libxcb-xinput-dev
+```
+
+### Steam Deck (Arch Linux)
+
+```console
+sudo steamos-readonly disable
+sudo pacman-key --init
+sudo pacman-key --populate archlinux
+sudo pacman -Syu glibc linux-api-headers # reinstall, because some random files were removed by Valve
+sudo pacman -Sy cairo cjson icu libglvnd libpng librsvg libxcb pango xcb-util xcb-util-image xcb-util-wm
+sudo pacman -Sy gdk-pixbuf2 glib2 harfbuzz xorgproto # for some more missing headers
 ```
 
 ## Command-line arguments
