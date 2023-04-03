@@ -3,8 +3,8 @@
 Deps.git_inherit("https://github.com/inobulles/umber")
 Deps.git_inherit("https://github.com/inobulles/iar")
 
-Deps.git_inherit("https://github.com/inobulles/aqua-kos", "bob")
-Deps.git_inherit("https://github.com/inobulles/aqua-devices", "bob")
+Deps.git_inherit("https://github.com/inobulles/aqua-kos")
+Deps.git_inherit("https://github.com/inobulles/aqua-devices")
 
 // running
 
